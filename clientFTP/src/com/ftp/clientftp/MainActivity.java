@@ -1,8 +1,25 @@
 package com.ftp.clientftp;
 
-
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.ConnectException;
+import java.net.MalformedURLException;
+import java.net.Socket;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,9 +27,10 @@ import android.support.v4.app.Fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
@@ -23,13 +41,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,14 +51,13 @@ public class MainActivity extends Activity {
 	
 	private ListView liste = null;
 	private File rep = null;
+	private File rep2 = null;
 	private String[] nomsFichiers = null;
 	private List<String> nomsListe = null;
 	private ArrayAdapter<String> adapter = null;
 	private boolean quit = false;
 	private String pathFichier = null;
-	private String pathDossier = null;
 	private String pathParent = null;
-	private String saisie = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +77,6 @@ public class MainActivity extends Activity {
 	    		  
 	    		  if(rep.isDirectory()) //si c'est un repertoire,on l'ouvre
 	    		  {
-	    			  pathDossier=rep.getPath();
 	    			  creerListe(rep.getPath());
 	    			  quit=false;
 	    			  
@@ -181,6 +193,7 @@ public class MainActivity extends Activity {
 		//on ouvre le répertoire courant
 		
 		rep = new File(chemin);
+		pathParent = rep.getPath();
 		nomsFichiers = rep.list();
 		
 		liste = (ListView) findViewById(R.id.listView1); //on créer la liste qui sera affichée
@@ -190,9 +203,114 @@ public class MainActivity extends Activity {
 		{
 			nomsListe.add(nomsFichiers[i]);
 		}
-		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, nomsListe);
+		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, nomsListe){
+
+	        @Override
+	        public View getView(int position, View convertView,ViewGroup parent) {
+	            View view = super.getView(position, convertView, parent);
+	            //TODO
+	            
+	            rep2 = new File(pathParent+"/"+nomsFichiers[position]);
+	            
+	            TextView textView=(TextView) view.findViewById(android.R.id.text1);
+	            
+	            if(rep2.isFile())
+	            {
+	            	textView.setTextColor(Color.BLACK); //couleur des fichiers
+	            	
+	            }
+	            else
+	            {
+	            	textView.setTextColor(Color.BLUE); //couleur des dossiers
+	            }
+
+	            return view;
+	        }
+	    };
+	    
 	    liste.setAdapter(adapter);
-	}   
+	}  
+	
+	public void envoiFTP(String filePath){
+		
+		ftpThr a = new ftpThr();
+
+		a.start();
+		Toast.makeText(this,a.resultat,Toast.LENGTH_SHORT).show();
+	}
+	
+	public class ftpThr extends Thread {
+		 
+		private Socket mySocket;
+	    private BufferedReader myReader;
+	    private PrintWriter myWriter;
+	    public String resultat = "";
+	    
+		  public ftpThr() {}
+		  
+		  public void run() {
+				try {
+					mySocket = new Socket("shinichi93.free.fr", 21);
+					Log.e("Demande de connexion","lol");
+					 
+					myReader = new BufferedReader(new InputStreamReader(mySocket.getInputStream()));
+					myWriter = new PrintWriter(mySocket.getOutputStream());
+					String messageServeur = myReader.readLine();
+					Log.e(messageServeur,"lol");
+					
+					String operation="";
+					resultat="";
+					
+					// envoi login
+					operation = "USER shinichi93";
+					myWriter.println(operation); //envoi du msg
+					myWriter.flush();
+					resultat = myReader.readLine();
+					Log.e(resultat,"lol");
+					
+					// envoi pass
+					operation = "PASS iDfjOR54";
+					myWriter.println(operation); //envoi du msg
+					myWriter.flush();
+					resultat = myReader.readLine();
+					Log.e(resultat,"lol");
+					
+					// mode passif
+					operation = "PASV";
+					myWriter.println(operation); //envoi du msg
+					myWriter.flush();
+					resultat = myReader.readLine();
+					Log.e(resultat,"lol");
+					
+					// envoi
+					operation = "CWD /";
+					myWriter.println(operation); //envoi du msg
+					myWriter.flush();
+					resultat = myReader.readLine();
+					Log.e(resultat,"lol");
+					
+					// envoi
+					operation = "TYPE A";
+					myWriter.println(operation); //envoi du msg
+					myWriter.flush();
+					resultat = myReader.readLine();
+					Log.e(resultat,"lol");
+					
+					// envoi
+					operation = "STOR ueventd.rc";
+					myWriter.println(operation); //envoi du msg
+					myWriter.flush();
+					resultat = myReader.readLine();
+					Log.e(resultat,"lol");
+					
+					mySocket.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+					Log.e("Erreur socket","lol");
+				}
+
+		  }
+		}
 	
 	@Override  
     public void onCreateContextMenu(ContextMenu menu, View v,ContextMenuInfo menuInfo) {  
@@ -200,20 +318,18 @@ public class MainActivity extends Activity {
         menu.add(0, v.getId(), 0, "Envoyer"); 
         menu.add(0, v.getId(), 0, "Renommer"); 
         menu.add(0, v.getId(), 0, "Supprimer");
-        menu.add(0, v.getId(), 0, "Créer un fichier");
-        menu.add(0, v.getId(), 0, "Créer un répertoire");
     }  
   
     @Override  
     public boolean onContextItemSelected(MenuItem item) {
         if(item.getTitle().equals("Envoyer")){
         	
-        	Toast.makeText(this,"Envoyer",Toast.LENGTH_SHORT).show(); 
+        	Toast.makeText(this,pathFichier,Toast.LENGTH_SHORT).show();
+        	envoiFTP(pathFichier);
         }  
         else if(item.getTitle().equals("Renommer")){
         	
         	Toast.makeText(this,"Renommer",Toast.LENGTH_SHORT).show();
-        	
         	boiteDialogRenommerFichier();
         	
         }
@@ -228,29 +344,43 @@ public class MainActivity extends Activity {
         	rep = new File(pathParent);
         	creerListe(rep.getPath()); //on actualise la liste
         }
-        else if(item.getTitle().equals("Créer un fichier")){
-        	
-        	Toast.makeText(this,"Créer un fichier",Toast.LENGTH_SHORT).show();
-        	
-        	boiteDialogNewFichier();
-        	
-        	creerListe(rep.getPath());
-        	
-        }
-        else if(item.getTitle().equals("Créer un répertoire")){
-        	
-        	Toast.makeText(this,"Créer un répertoire",Toast.LENGTH_SHORT).show();
-        	
-        	boiteDialogNewDossier();
-        	creerListe(rep.getPath());
-        } 
         else {
         	
         	return false;
         }  
     return true;  
     }  
-
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+      
+      super.onCreateOptionsMenu(menu); //on créer l'actionBar (bouton Menu)
+      MenuInflater inflater = getMenuInflater();
+      inflater.inflate(R.menu.main, menu);
+      
+      return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected (MenuItem item)
+    {
+      switch(item.getItemId())
+      {
+        case R.id.creerFichier:
+        	boiteDialogNewFichier();
+        	return true;
+          
+        case R.id.creerRepertoire:
+        	boiteDialogNewDossier();
+        	return true;
+        	
+        case R.id.quitter:
+        	finish();
+            return true;
+      }
+      return super.onOptionsItemSelected(item);
+    }
+    
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 
 		//touche retour  
