@@ -1,0 +1,20 @@
+--- Explorateur ---
+
+Upload de fichiers
+Ouverture de fichiers
+Creation de fichiers/repertoire
+Renommage de fichiers
+Suppression de fichiers
+
+--- Explorateur FTP ---
+
+Telechargement de fichiers
+Connexion utilisateur
+Sauvegarde des parametres de connexion
+Modes binaire/ASCII
+Creation de fichiers/repertoires
+Renommage de fichiers
+Suppression de fichiers/repertoires
+Detection de non-connexion
+Interception de liens FTP (ftp://login:pass@hote)
+Mode anonyme

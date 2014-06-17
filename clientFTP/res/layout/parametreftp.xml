@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?><LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/fond_ftp"
+    android:gravity="center"
+    android:orientation="vertical" xmlns:app="http://schemas.android.com/apk/res/com.ftp.clientftp">
+
+    <TextView
+        android:id="@+id/adresseFtpLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:color="#FFFFFF"
+        android:textColor="#FFFFFF"
+        android:text="Hôte" />
+
+    <EditText
+        android:id="@+id/adresseFtpEditText"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:color="#FFFFFF"
+        android:textColor="#FFFFFF"
+        android:ems="10" >
+
+        <requestFocus />
+    </EditText>
+    <TextView
+        android:id="@+id/loginFtpLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:color="#FFFFFF"
+        android:textColor="#FFFFFF"
+        android:text="Identifiant" />
+
+    <EditText
+        android:id="@+id/loginFtpEditText"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:color="#FFFFFF"
+        android:textColor="#FFFFFF"
+        android:ems="10" >
+
+        <requestFocus />
+    </EditText>
+<TextView
+        android:id="@+id/passFtpLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:color="#FFFFFF"
+        android:textColor="#FFFFFF"
+        android:text="Mot de passe" />
+
+    <EditText
+        android:id="@+id/passFtpEditText"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:color="#FFFFFF"
+        android:textColor="#FFFFFF"
+        android:ems="10" >
+
+        <requestFocus />
+    </EditText>
+	
+    <TextView
+        android:id="@+id/modeAnonymeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:color="#FFFFFF"
+        android:textColor="#FFFFFF"
+        android:text="Mode anonyme" />
+    
+    <CheckBox
+        android:id="@+id/modeAnonymeCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    
+    <TextView
+        android:id="@+id/modeBinaireLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:color="#FFFFFF"
+        android:textColor="#FFFFFF"
+        android:text="Mode binaire" />
+    
+    <CheckBox
+        android:id="@+id/modeBinaireCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/boutonValiderParam"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="validerParam"
+        android:text="Enregistrer" />
+
+</LinearLayout>

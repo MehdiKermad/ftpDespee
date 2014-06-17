@@ -3,6 +3,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/fond_ftp"
     tools:context="com.ftp.clientftp.MainActivity"
     tools:ignore="MergeRootFrame" >
 
@@ -14,6 +15,9 @@
 	    <ListView
 	        android:id="@+id/listView1"
 	        android:layout_width="match_parent"
+	        android:background="@android:color/transparent"
+			android:cacheColorHint="@android:color/transparent"
+			android:divider="@android:color/transparent"
 	        android:layout_height="wrap_content" >
 	    </ListView>
 		

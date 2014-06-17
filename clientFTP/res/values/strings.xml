@@ -4,11 +4,21 @@
     <string name="app_name">FTP Despee</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_activity1">Activity1</string>
+    <string name="title_parametreftp">FTP Despee &gt; Paramètres FTP</string>
+    <string name="title_explorerftp">FTP Despee &gt; Explorer FTP</string>
+	<string name="title_listefonctions">FTP Despee &gt; Fonctionnalités</string>
+	
     <string-array name="choixContext1">
         <item>Envoyer</item>
         <item>Renommer</item>
         <item>Supprimer</item>
     </string-array>
+    <string-array name="choixContextFtp">
+        <item>Télécharger</item>
+        <item>Renommer</item>
+        <item>Supprimer</item>
+    </string-array>
+
+    <string name="title_activity_liste_fonctions">ListeFonctions</string>
 
 </resources>

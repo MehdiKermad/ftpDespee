@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
+  <item android:id="@+id/explorer" android:title="Explorer le serveur"></item>
   <item android:id="@+id/creerFichier" android:title="Créer un fichier"></item>
   <item android:id="@+id/creerRepertoire" android:title="Créer un répértoire"></item>
+  <item android:id="@+id/parametreFtp" android:title="Paramètres FTP"></item>
+  <item android:id="@+id/listeFonctions" android:title="Fonctionnalités"></item>
   <item android:id="@+id/quitter" android:title="Quitter"></item>
 </menu>

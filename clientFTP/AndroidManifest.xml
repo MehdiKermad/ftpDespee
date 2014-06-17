@@ -3,10 +3,13 @@
     package="com.ftp.clientftp"
     android:versionCode="1"
     android:versionName="1.0" >
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	<uses-permission android:name="android.permission.INTERNET" ></uses-permission>
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" ></uses-permission>
-    
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" >
+    </uses-permission>
+
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="19" />
@@ -24,13 +27,29 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            
         </activity>
         <activity
-            android:name="com.ftp.clientftp.Activity1"
-            android:label="@string/title_activity_activity1" >
+            android:name="com.ftp.clientftp.ParametreFtp"
+            android:label="@string/title_parametreftp" >
         </activity>
-        
+        <activity
+            android:name="com.ftp.clientftp.ExplorerFtp"
+            android:label="@string/title_explorerftp" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="*"
+                    android:scheme="ftp" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.ftp.clientftp.ListeFonctions"
+            android:label="@string/title_listefonctions" >
+        </activity>
     </application>
 
 </manifest>

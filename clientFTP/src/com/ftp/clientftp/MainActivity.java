@@ -1,35 +1,33 @@
 package com.ftp.clientftp;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.ConnectException;
-import java.net.MalformedURLException;
 import java.net.Socket;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.support.v4.app.Fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -56,44 +54,92 @@ public class MainActivity extends Activity {
 	private List<String> nomsListe = null;
 	private ArrayAdapter<String> adapter = null;
 	private boolean quit = false;
+	private List<String> listeRecu = null;
+	private ConnectivityManager connManager = null;
+	private NetworkInfo mWifi = null;
+	private String nomFichier = null;
 	private String pathFichier = null;
 	private String pathParent = null;
+	private String adresseFtp = "ftpperso.free.fr";
+	private String loginFtp = "";
+	private String passFtp = "";
+	private String modeFtp = "I";
+	private String ipRecu = "";
+	private int portRecu = 0;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.ecranlancement); //ecran de lancement
 		
-		//on actualise la liste par rapport au repertoire courant
-		creerListe(Environment.getExternalStorageDirectory().toString());
-	    
-	    //on paramètre les click courts
-	    liste.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-	    	  @Override
-	    	  public void onItemClick(AdapterView<?> adapterView, View view, int position,long id) {
-	    		  
-	    		  String nomClick = liste.getItemAtPosition((int)id).toString();
-    			  rep = new File(rep.getPath()+"/"+nomClick);
-	    		  
-	    		  if(rep.isDirectory()) //si c'est un repertoire,on l'ouvre
-	    		  {
-	    			  creerListe(rep.getPath());
-	    			  quit=false;
-	    			  
-	    		  }
-	    		  else //si c'est un fichier,on ouvre le menu contextuel
-	    		  {
-	    			  pathFichier=rep.getAbsolutePath(); //on récupère le chemin du fichier dans le cas d'une opération
-	    			  rep = new File(rep.getParent());
-	    			  pathParent=rep.getAbsolutePath();
-	    			  quit=false;
-	    			  openContextMenu(view);
-	    			  
-	    		  }
-	    	  }
-	    	});
-	    
-	    registerForContextMenu(liste); //on associe la menu context à notre liste
+		SoundPool soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0); //preparation du son
+		int sound = soundPool.load(this, R.raw.sonlancement, 1);
+		
+		soundPool.play(sound, 1, 1, 0, 0, 1);
+		
+		MediaPlayer mPlayer = MediaPlayer.create(getBaseContext(), R.raw.sonlancement); //lancement du son
+		mPlayer.start();
+		
+		Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+		    @Override
+		    public void run() {
+		    	
+			setContentView(R.layout.activity_main);
+			
+			//on regarde l'etat de la connexion
+			connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+		    mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+			
+		    if (!mWifi.isConnected())
+		        erreurToast("Veuillez vous connecter à un réseau Wi-Fi");
+		    
+		    //chargement des parametres FTP depuis le registre
+		    
+		    SharedPreferences prefs = getPreferences(MODE_PRIVATE); 
+		    String restoredText = prefs.getString("hote", null);
+		    if (restoredText != null) 
+		    {
+		      adresseFtp = prefs.getString("hote", adresseFtp);
+		      loginFtp = prefs.getString("login", loginFtp);
+		      passFtp = prefs.getString("pass", passFtp);
+		      modeFtp = prefs.getString("mode", modeFtp);
+		    }
+		    
+			//on actualise la liste par rapport au repertoire courant
+			creerListe(Environment.getExternalStorageDirectory().toString());
+		    
+		    //on paramètre les click courts
+		    liste.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		    	  @Override
+		    	  public void onItemClick(AdapterView<?> adapterView, View view, int position,long id) {
+		    		  
+		    		  String nomClick = liste.getItemAtPosition((int)id).toString();
+	    			  rep = new File(rep.getPath()+"/"+nomClick);
+		    		  
+		    		  if(rep.isDirectory()) //si c'est un repertoire,on l'ouvre
+		    		  {
+		    			  creerListe(rep.getPath());
+		    			  quit=false;
+		    			  
+		    		  }
+		    		  else //si c'est un fichier,on ouvre le menu contextuel
+		    		  {
+		    			  pathFichier=rep.getAbsolutePath(); //on récupère le chemin du fichier dans le cas d'une opération
+		    			  nomFichier=rep.getName();
+		    			  rep = new File(rep.getParent());
+		    			  pathParent=rep.getAbsolutePath();
+		    			  erreurToast(pathFichier);
+		    			  quit=false;
+		    			  openContextMenu(view);
+		    			  
+		    		  }
+		    	  }
+		    	});
+		    
+		    registerForContextMenu(liste); //on associe la menu context à notre liste
+		    }
+		}, 2000);
 	}
 	
 	public void boiteDialogRenommerFichier()
@@ -208,20 +254,19 @@ public class MainActivity extends Activity {
 	        @Override
 	        public View getView(int position, View convertView,ViewGroup parent) {
 	            View view = super.getView(position, convertView, parent);
-	            //TODO
 	            
 	            rep2 = new File(pathParent+"/"+nomsFichiers[position]);
-	            
 	            TextView textView=(TextView) view.findViewById(android.R.id.text1);
+	            textView.setTextColor(Color.WHITE); //couleur des éléments
 	            
 	            if(rep2.isFile())
 	            {
-	            	textView.setTextColor(Color.BLACK); //couleur des fichiers
+	            	textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.fichier, 0, 0, 0);
 	            	
 	            }
 	            else
 	            {
-	            	textView.setTextColor(Color.BLUE); //couleur des dossiers
+	            	textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.dossier, 0, 0, 0);
 	            }
 
 	            return view;
@@ -229,81 +274,223 @@ public class MainActivity extends Activity {
 	    };
 	    
 	    liste.setAdapter(adapter);
-	}  
-	
-	public void envoiFTP(String filePath){
-		
-		ftpThr a = new ftpThr();
-
-		a.start();
-		Toast.makeText(this,a.resultat,Toast.LENGTH_SHORT).show();
 	}
 	
-	public class ftpThr extends Thread {
+	public void ouvertureFichier(){
+		
+		rep = new File(pathFichier);
+		Uri uri = Uri.fromFile(rep);
+        
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+
+        if (pathFichier.contains(".doc") || pathFichier.contains(".docx"))
+        {
+            intent.setDataAndType(uri, "application/msword");
+        }
+        else if(pathFichier.contains(".pdf"))
+        {
+            intent.setDataAndType(uri, "application/pdf");
+        }
+        else if(pathFichier.contains(".ppt") || pathFichier.contains(".pptx"))
+        {
+            intent.setDataAndType(uri, "application/vnd.ms-powerpoint");
+        }
+        else if(pathFichier.contains(".xls") || pathFichier.contains(".xlsx"))
+        {
+            intent.setDataAndType(uri, "application/vnd.ms-excel");
+        }
+        else if(pathFichier.contains(".wav"))
+        {
+            intent.setDataAndType(uri, "application/x-wav");
+        }
+        else if(pathFichier.contains(".rtf"))
+        {
+            intent.setDataAndType(uri, "application/rtf");
+        }
+        else if(pathFichier.contains(".wav") || pathFichier.contains(".mp3"))
+        {
+            intent.setDataAndType(uri, "audio/x-wav");
+        }
+        else if(pathFichier.contains(".gif"))
+        {
+            intent.setDataAndType(uri, "image/gif");
+        }
+        else if(pathFichier.contains(".jpg") || pathFichier.contains(".jpeg") || pathFichier.contains(".png"))
+        {
+            intent.setDataAndType(uri, "image/jpeg");
+        }
+        else if(pathFichier.contains(".txt"))
+        {
+            intent.setDataAndType(uri, "text/plain");
+        }
+        else if(pathFichier.contains(".3gp") || pathFichier.contains(".mpg") || pathFichier.contains(".mpeg") || pathFichier.contains(".mpe") || pathFichier.contains(".mp4") || pathFichier.contains(".avi"))
+        {
+            intent.setDataAndType(uri, "video/*");
+        }
+        
+        startActivity(intent);
+        rep = new File(rep.getParent());
+	}
+	
+	public void creerListeFtp(){
+		
+		liste = (ListView) findViewById(R.id.listView1); //on créer la liste qui sera affichée
+		
+		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listeRecu){
+
+	        @Override
+	        public View getView(int position, View convertView,ViewGroup parent) {
+	            View view = super.getView(position, convertView, parent);
+	            
+	            TextView textView=(TextView) view.findViewById(android.R.id.text1);
+	            textView.setTextColor(Color.WHITE); //couleur des éléments
+	            
+	            String res = listeRecu.get(position);
+	            
+	            if(res.lastIndexOf(".")!=-1 && res.indexOf(".")==res.lastIndexOf(".")) //on verifie si on a un fichier ou un repertoire
+	            {
+	            	textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.fichier, 0, 0, 0);	
+	            }
+	            else
+	            {
+	            	textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.dossier, 0, 0, 0);
+	            }
+	            
+	            return view;
+	        }
+	    };
+	    
+	    liste.setAdapter(adapter);
+	}
+	
+	public void erreurToast(String msg){
+		Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
+	}
+	
+	public class upload extends Thread {
 		 
-		private Socket mySocket;
-	    private BufferedReader myReader;
-	    private PrintWriter myWriter;
+		private Socket socketControle;
+		private Socket socketDonnee;
+	    private BufferedReader myReader1;
+	    private PrintWriter myWriter1;
+	    private OutputStream myOutput;
+	    private File rep3;
 	    public String resultat = "";
 	    
-		  public ftpThr() {}
+		  public upload() {}
 		  
 		  public void run() {
 				try {
-					mySocket = new Socket("shinichi93.free.fr", 21);
-					Log.e("Demande de connexion","lol");
+					Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+					
+					socketControle = new Socket(adresseFtp, 21);
 					 
-					myReader = new BufferedReader(new InputStreamReader(mySocket.getInputStream()));
-					myWriter = new PrintWriter(mySocket.getOutputStream());
-					String messageServeur = myReader.readLine();
+					myReader1 = new BufferedReader(new InputStreamReader(socketControle.getInputStream()));
+					myWriter1 = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socketControle.getOutputStream())),true);
+				
+					
+					String messageServeur = myReader1.readLine();
 					Log.e(messageServeur,"lol");
 					
 					String operation="";
 					resultat="";
 					
 					// envoi login
-					operation = "USER shinichi93";
-					myWriter.println(operation); //envoi du msg
-					myWriter.flush();
-					resultat = myReader.readLine();
+					operation = "USER "+loginFtp;
+					myWriter1.println(operation); //envoi du msg
+					myWriter1.flush();
+					resultat = myReader1.readLine();
 					Log.e(resultat,"lol");
 					
 					// envoi pass
-					operation = "PASS iDfjOR54";
-					myWriter.println(operation); //envoi du msg
-					myWriter.flush();
-					resultat = myReader.readLine();
+					operation = "PASS "+passFtp;
+					myWriter1.println(operation); //envoi du msg
+					myWriter1.flush();
+					resultat = myReader1.readLine();
+					Log.e(resultat,"lol");
+					
+					// envoi
+					operation = "CWD upload"; //on ouvre le répertoire dédié sur le serveur
+					myWriter1.println(operation); //envoi du msg
+					myWriter1.flush();
+					resultat = myReader1.readLine();
+					Log.e(resultat,"lol");
+					
+					// envoi
+					operation = "TYPE "+modeFtp;
+					myWriter1.println(operation); //envoi du msg
+					myWriter1.flush();
+					resultat = myReader1.readLine();
 					Log.e(resultat,"lol");
 					
 					// mode passif
 					operation = "PASV";
-					myWriter.println(operation); //envoi du msg
-					myWriter.flush();
-					resultat = myReader.readLine();
+					myWriter1.println(operation); //envoi du msg
+					myWriter1.flush();
+					resultat = myReader1.readLine();
 					Log.e(resultat,"lol");
 					
+					//traitement de la chaine de caractère
+					String a = resultat;
+					a=a.substring(a.indexOf("(",0)+1);
+					String str[]=a.split(",");
+					str[5]=str[5].substring(0,str[5].indexOf(").",0));
+					
+					ipRecu="";
+					
+					for(int cpt=0;cpt<4;cpt++)
+					{
+						ipRecu+=str[cpt];
+						if(cpt<3)
+							ipRecu+=".";
+					}
+					
+					portRecu=Integer.parseInt(str[4])*256;
+					portRecu+=Integer.parseInt(str[5]);
+					
+					// mode passif
+					operation = "STOR "+nomFichier;
+					myWriter1.println(operation); //envoi du msg
+					myWriter1.flush();
+					resultat = myReader1.readLine();
+					Log.e(resultat,"lol");
+					
+					//envoi des données
+					
+					socketDonnee = new Socket(ipRecu, portRecu);
+					 
+					myOutput = socketDonnee.getOutputStream();
+
 					// envoi
-					operation = "CWD /";
-					myWriter.println(operation); //envoi du msg
-					myWriter.flush();
-					resultat = myReader.readLine();
+					rep3 = new File(pathFichier);
+					FileInputStream fis=new FileInputStream(rep3);
+					byte fileContent[] = new byte[(int)rep.length()];
+
+					int n=0;
+			        while((n=fis.read(fileContent))!=-1)
+			        {
+			        	myOutput.write(fileContent,0,n);
+			        }
+			        
+			        myOutput.flush();
+					Log.e("ok","lol");
+					
+					socketDonnee.close();
+					
+					resultat = myReader1.readLine();
+					Log.e(resultat,"lol");
+
+					fis.close();
+					
+					// déconnexion
+					operation = "QUIT";
+					myWriter1.println(operation); //envoi du msg
+					myWriter1.flush();
+					resultat = myReader1.readLine();
 					Log.e(resultat,"lol");
 					
-					// envoi
-					operation = "TYPE A";
-					myWriter.println(operation); //envoi du msg
-					myWriter.flush();
-					resultat = myReader.readLine();
-					Log.e(resultat,"lol");
+					socketControle.close();
 					
-					// envoi
-					operation = "STOR ueventd.rc";
-					myWriter.println(operation); //envoi du msg
-					myWriter.flush();
-					resultat = myReader.readLine();
-					Log.e(resultat,"lol");
-					
-					mySocket.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 					Log.e("Erreur socket","lol");
@@ -315,6 +502,7 @@ public class MainActivity extends Activity {
 	@Override  
     public void onCreateContextMenu(ContextMenu menu, View v,ContextMenuInfo menuInfo) {  
     super.onCreateContextMenu(menu, v, menuInfo);   
+    	menu.add(0, v.getId(), 0, "Ouvrir");
         menu.add(0, v.getId(), 0, "Envoyer"); 
         menu.add(0, v.getId(), 0, "Renommer"); 
         menu.add(0, v.getId(), 0, "Supprimer");
@@ -322,20 +510,34 @@ public class MainActivity extends Activity {
   
     @Override  
     public boolean onContextItemSelected(MenuItem item) {
+    	if(item.getTitle().equals("Ouvrir")){
+    		
+    		erreurToast(pathFichier);
+    		ouvertureFichier();
+    	}
         if(item.getTitle().equals("Envoyer")){
         	
-        	Toast.makeText(this,pathFichier,Toast.LENGTH_SHORT).show();
-        	envoiFTP(pathFichier);
+        	mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+			
+		    if (!mWifi.isConnected())
+		    {
+		        erreurToast("Veuillez vous connecter à un réseau Wi-Fi");
+		    }
+		    else
+		    {
+	        	upload a = new upload();
+	    		a.start();
+	    		
+	    		creerListe(pathParent);
+		    }
         }  
         else if(item.getTitle().equals("Renommer")){
         	
-        	Toast.makeText(this,"Renommer",Toast.LENGTH_SHORT).show();
         	boiteDialogRenommerFichier();
-        	
         }
         else if(item.getTitle().equals("Supprimer")){
         	
-        	Toast.makeText(this,"Supprimer",Toast.LENGTH_SHORT).show();
+        	erreurToast("Le fichier a été supprimé");
 
         	//on supprime le fichier
         	rep = new File(pathFichier);
@@ -357,7 +559,6 @@ public class MainActivity extends Activity {
       super.onCreateOptionsMenu(menu); //on créer l'actionBar (bouton Menu)
       MenuInflater inflater = getMenuInflater();
       inflater.inflate(R.menu.main, menu);
-      
       return true;
     }
     
@@ -365,14 +566,37 @@ public class MainActivity extends Activity {
     public boolean onOptionsItemSelected (MenuItem item)
     {
       switch(item.getItemId())
-      {
-        case R.id.creerFichier:
+      {    	  
+      	case R.id.explorer:
+  		  Intent intent2 = new Intent(MainActivity.this, ExplorerFtp.class); //on démarre l'explorateur
+   		  intent2.putExtra("hote",adresseFtp);
+   		  intent2.putExtra("login",loginFtp);
+   		  intent2.putExtra("pass",passFtp);
+   		  intent2.putExtra("mode",modeFtp);
+    	  startActivityForResult(intent2, 2);
+    	  return true;
+      
+      	case R.id.creerFichier:
         	boiteDialogNewFichier();
         	return true;
           
         case R.id.creerRepertoire:
         	boiteDialogNewDossier();
         	return true;
+        	
+        case R.id.parametreFtp:
+        	Intent intent = new Intent(MainActivity.this, ParametreFtp.class);
+        	intent.putExtra("hote",adresseFtp);
+        	intent.putExtra("login",loginFtp);
+        	intent.putExtra("pass",passFtp);
+        	intent.putExtra("mode",modeFtp);
+        	startActivityForResult(intent, 1);
+        	return true;
+        	
+        case R.id.listeFonctions:
+        	Intent intent3 = new Intent(MainActivity.this, ListeFonctions.class);
+     		startActivityForResult(intent3, 3);
+            return true;
         	
         case R.id.quitter:
         	finish();
@@ -399,28 +623,39 @@ public class MainActivity extends Activity {
 		    	else
 		    	{
 			    	quit=true;
-			    	Toast.makeText(MainActivity.this,"Appuyer une 2ème fois pour quitter",Toast.LENGTH_SHORT).show();
+			    	erreurToast("Appuyer une 2ème fois pour quitter");
 		    	}
 		    }
 		    return true;
 		 }
 		return super.onKeyDown(keyCode, event);
 	}
-
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-
-		public PlaceholderFragment() {
+	
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(resultCode==1) //on récupère les paramètres FTP
+		{
+			adresseFtp=data.getStringExtra("hote");
+			loginFtp=data.getStringExtra("login");
+			passFtp=data.getStringExtra("pass");
+			modeFtp=data.getStringExtra("mode");
+			
+			//on enregistre les parametres dans le registre du tel
+			SharedPreferences.Editor editor = getPreferences(MODE_PRIVATE).edit();
+			editor.putString("hote", adresseFtp);
+			editor.putString("login", loginFtp);
+			editor.putString("pass", passFtp);
+			editor.putString("mode", modeFtp);
+			editor.commit();
+			 
+			erreurToast("Vos modifications ont été prises en compte");
 		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main, container,
-					false);
-			return rootView;
+		if(resultCode==2) //en quittant le serveur
+		{	
+			creerListe(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString());
+		}
+		if(resultCode==3) //en quittant les fonctionnalités
+		{	
+			erreurToast("Mehdi Kermad");
 		}
 	}
 
