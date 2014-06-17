@@ -303,7 +303,7 @@ public class ExplorerFtp extends Activity {
 				
 					
 					String messageServeur = myReader1.readLine();
-					Log.e(messageServeur,"lol");
+					//Log.e(messageServeur,"lol");
 					
 					String operation="";
 					resultat="";
@@ -313,35 +313,35 @@ public class ExplorerFtp extends Activity {
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					// envoi pass
 					operation = "PASS "+passFtp;
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					// envoi
 					operation = "CWD "+repCourant; //on ouvre le répertoire dédié sur le serveur
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					// envoi
 					operation = "TYPE "+modeFtp;
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					// mode passif
 					operation = "PASV";
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					//traitement de la chaine de caractère
 					String a = resultat;
@@ -364,7 +364,7 @@ public class ExplorerFtp extends Activity {
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					//envoi des données
 					
@@ -379,21 +379,21 @@ public class ExplorerFtp extends Activity {
 			        myOutput.write(fileContent);
 
 			        myOutput.flush();
-					Log.e("ok","lol");
+					//Log.e("ok","lol");
 					
 					// mode passif
 					operation = "QUIT";
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					socketDonnee.close();
 					socketControle.close();
 					
 				} catch (IOException e) {
 					e.printStackTrace();
-					Log.e("Erreur socket","lol");
+					//Log.e("Erreur socket","lol");
 				}
 
 		  }
@@ -421,7 +421,7 @@ public class ExplorerFtp extends Activity {
 				
 					
 					String messageServeur = myReader1.readLine();
-					Log.e(messageServeur,"lol");
+					//Log.e(messageServeur,"lol");
 					
 					String operation="";
 					resultat="";
@@ -431,35 +431,35 @@ public class ExplorerFtp extends Activity {
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					// envoi pass
 					operation = "PASS "+passFtp;
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					// envoi
 					operation = "CWD "+repCourant;
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					// envoi
 					operation = "TYPE "+modeFtp;
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					// mode passif
 					operation = "PASV";
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					//traitement de la chaine de caractère
 					String a = resultat;
@@ -482,14 +482,14 @@ public class ExplorerFtp extends Activity {
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 
 					// mode passif
 					operation = "RETR "+fichierDemande;
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					//reception des données
 					
@@ -503,10 +503,10 @@ public class ExplorerFtp extends Activity {
 					int n=0;
 					while((n=myInput.read(fileContent))!=-1)
 						fis.write(fileContent);
-					Log.e("ok ","lol");
+					//Log.e("ok ","lol");
 					
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					fis.close();
 					
@@ -515,14 +515,14 @@ public class ExplorerFtp extends Activity {
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					socketDonnee.close();
 					socketControle.close();
 					
 				} catch (IOException e) {
 					e.printStackTrace();
-					Log.e("Erreur socket","lol");
+					//Log.e("Erreur socket","lol");
 				}
 
 		  }
@@ -547,7 +547,7 @@ public class ExplorerFtp extends Activity {
 				myWriter1 = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socketControle.getOutputStream())),true);
 				
 				String messageServeur = myReader1.readLine();
-				System.out.println(messageServeur);
+				//System.out.println(messageServeur);
 				
 				String operation="";
 				String resultat="";
@@ -557,28 +557,28 @@ public class ExplorerFtp extends Activity {
 				myWriter1.println(operation); //envoi du msg
 				myWriter1.flush();
 				resultat = myReader1.readLine();
-				System.out.println(resultat);
+				//System.out.println(resultat);
 				
 				// envoi pass
 				operation = "PASS "+passFtp;
 				myWriter1.println(operation); //envoi du msg
 				myWriter1.flush();
 				resultat = myReader1.readLine();
-				System.out.println(resultat);
+				//System.out.println(resultat);
 				
 				// changement de repertoire
 				operation = "CWD "+repOuvrir;
 				myWriter1.println(operation); //envoi du msg
 				myWriter1.flush();
 				resultat = myReader1.readLine();
-				System.out.println(resultat);
+				//System.out.println(resultat);
 				
 				// verification de repertoire
 				operation = "PWD";
 				myWriter1.println(operation); //envoi du msg
 				myWriter1.flush();
 				resultat = myReader1.readLine();
-				System.out.println(resultat);
+				////System.out.println(resultat);
 				
 				//on enregistre le repertoire courant
 				repCourant = resultat.substring(resultat.indexOf("\"")+1,resultat.lastIndexOf("\""));
@@ -588,14 +588,14 @@ public class ExplorerFtp extends Activity {
 				myWriter1.println(operation); //envoi du msg
 				myWriter1.flush();
 				resultat = myReader1.readLine();
-				System.out.println(resultat);
+				////System.out.println(resultat);
 				
 				// mode passif
 				operation = "PASV";
 				myWriter1.println(operation); //envoi du msg
 				myWriter1.flush();
 				resultat = myReader1.readLine();
-				System.out.println(resultat);
+				////System.out.println(resultat);
 				
 				//traitement de la chaine de caractère
 				String a = resultat;
@@ -654,7 +654,7 @@ public class ExplorerFtp extends Activity {
 						isFileRecu.add(isFile);
 					}
 					
-					System.out.println(res);
+					//System.out.println(res);
 					
 					fis.reset();
 				}while(res.length()!=0);
@@ -673,14 +673,14 @@ public class ExplorerFtp extends Activity {
 				myWriter1.println(operation); //envoi du msg
 				myWriter1.flush();
 				resultat = myReader1.readLine();
-				System.out.println(resultat);
+				//System.out.println(resultat);
 				
 				socketDonnee.close();
 				socketControle.close();
 
 			} catch (IOException e) {
 				e.printStackTrace();
-				System.out.println("Erreur socket");
+				//System.out.println("Erreur socket");
 			}
 
 		  }
@@ -703,7 +703,7 @@ public class ExplorerFtp extends Activity {
 				myWriter1 = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socketControle.getOutputStream())),true);
 				
 				String messageServeur = myReader1.readLine();
-				System.out.println(messageServeur);
+				//System.out.println(messageServeur);
 				
 				String operation="";
 				String resultat="";
@@ -713,28 +713,28 @@ public class ExplorerFtp extends Activity {
 				myWriter1.println(operation); //envoi du msg
 				myWriter1.flush();
 				resultat = myReader1.readLine();
-				System.out.println(resultat);
+				//System.out.println(resultat);
 				
 				// envoi pass
 				operation = "PASS "+passFtp;
 				myWriter1.println(operation); //envoi du msg
 				myWriter1.flush();
 				resultat = myReader1.readLine();
-				System.out.println(resultat);
+				//System.out.println(resultat);
 				
 				// changement de repertoire
 				operation = "CWD "+repOuvrir;
 				myWriter1.println(operation); //envoi du msg
 				myWriter1.flush();
 				resultat = myReader1.readLine();
-				System.out.println(resultat);
+				//System.out.println(resultat);
 				
 				// verification de repertoire
 				operation = "PWD";
 				myWriter1.println(operation); //envoi du msg
 				myWriter1.flush();
 				resultat = myReader1.readLine();
-				System.out.println(resultat);
+				//System.out.println(resultat);
 				
 				//on enregistre le repertoire courant
 				repCourant = resultat.substring(resultat.indexOf("\"")+1,resultat.lastIndexOf("\""));
@@ -756,7 +756,7 @@ public class ExplorerFtp extends Activity {
 					
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					System.out.println(resultat);
+					//System.out.println(resultat);
 				}
 				
 				// deconnexion
@@ -764,13 +764,13 @@ public class ExplorerFtp extends Activity {
 				myWriter1.println(operation); //envoi du msg
 				myWriter1.flush();
 				resultat = myReader1.readLine();
-				System.out.println(resultat);
+				//System.out.println(resultat);
 				
 				socketControle.close();
 
 			} catch (IOException e) {
 				e.printStackTrace();
-				System.out.println("Erreur socket");
+				//System.out.println("Erreur socket");
 			}
 
 		  }

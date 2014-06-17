@@ -390,7 +390,7 @@ public class MainActivity extends Activity {
 				
 					
 					String messageServeur = myReader1.readLine();
-					Log.e(messageServeur,"lol");
+					//Log.e(messageServeur,"lol");
 					
 					String operation="";
 					resultat="";
@@ -400,35 +400,35 @@ public class MainActivity extends Activity {
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					// envoi pass
 					operation = "PASS "+passFtp;
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					// envoi
 					operation = "CWD upload"; //on ouvre le répertoire dédié sur le serveur
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					// envoi
 					operation = "TYPE "+modeFtp;
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					// mode passif
 					operation = "PASV";
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					//traitement de la chaine de caractère
 					String a = resultat;
@@ -453,7 +453,7 @@ public class MainActivity extends Activity {
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					//envoi des données
 					
@@ -473,12 +473,12 @@ public class MainActivity extends Activity {
 			        }
 			        
 			        myOutput.flush();
-					Log.e("ok","lol");
+					//Log.e("ok","lol");
 					
 					socketDonnee.close();
 					
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 
 					fis.close();
 					
@@ -487,13 +487,13 @@ public class MainActivity extends Activity {
 					myWriter1.println(operation); //envoi du msg
 					myWriter1.flush();
 					resultat = myReader1.readLine();
-					Log.e(resultat,"lol");
+					//Log.e(resultat,"lol");
 					
 					socketControle.close();
 					
 				} catch (IOException e) {
 					e.printStackTrace();
-					Log.e("Erreur socket","lol");
+					//Log.e("Erreur socket","lol");
 				}
 
 		  }
